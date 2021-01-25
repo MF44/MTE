@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { WeatherProvider } from '../../providers/weather/weather';
+import { Storage } from '@ionic/storage'
 
 @Component({
   selector: 'page-home',
@@ -8,18 +9,28 @@ import { WeatherProvider } from '../../providers/weather/weather';
 })
 export class HomePage {
   weather:any;
-  city:string
+  city:string;
   
-  constructor(public navCtrl: NavController, public weatherProvider: WeatherProvider) {
+  constructor(
+    public navCtrl: NavController, 
+    public weatherProvider: WeatherProvider,
+    private storage: Storage
+  ){
     
   }
 
-  ionViewWillEnter(){
-    this.city = 'London';
+  ionViewWillEnter() {
+    this.storage.get('city').then((val) => {
+      if (val != null) {
+        this.city = val;
+      }
+      else {
+        this.city = 'London';
+      }
 
-     this.weatherProvider.getWeather(this.city).subscribe(weather => {
+      this.weatherProvider.getWeather(this.city).subscribe(weather => {
         this.weather = weather;
-        console.log(this.weather);
-     });
+      });
+    });
   }
 }
